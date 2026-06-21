@@ -93,19 +93,21 @@ function loadChart(data){
     let nonfood =
         data.filter(i=>i.nama_div=="NON FOOD").length;
 
-    new Chart(
-        document.getElementById('divisiChart'),
+   new Chart(
+    document.getElementById('divisiChart'),
+    {
+        type:'pie',
 
-        {
-            type:'pie',
+        data:{
+            labels:['Food','Non Food'],
+            datasets:[{
+                data:[food, nonfood]
+            }]
+        },
 
-            data:{
-                labels:['Food','Non Food'],
-
-                datasets:[{
-                    data:[food, nonfood]
-                }]
-            }
+        options:{
+            responsive:true,
+            maintainAspectRatio:true
         }
-    );
-}
+    }
+);
