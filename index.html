@@ -3,79 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Toko</title>
-
-    <link rel="stylesheet" href="css/style.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Dashboard Inventori Retail - Upload JSON</title>
+	
+	<link rel="stylesheet" href="css/style.css">
+	
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+    
 </head>
 <body>
 
-    <header>
-        <h1>📦 Dashboard Toko</h1>
-    </header>
-
-    <section class="cards">
-
-        <div class="card">
-            <h3>Total SKU</h3>
-            <p id="totalSku">0</p>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            📦 InventoriOS
+            <small>Dashboard Gudang • Upload JSON</small>
         </div>
 
-        <div class="card">
-            <h3>Total Stok</h3>
-            <p id="totalStock">0</p>
+        <!-- UPLOAD ZONE -->
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+            <div class="upload-icon">📂</div>
+            <p class="upload-text">Klik atau <strong>drag & drop</strong><br>file JSON di sini</p>
+            <button class="upload-btn">📤 Pilih File JSON</button>
+            <p class="file-info" id="fileInfo"></p>
+        </div>
+        <input type="file" id="fileInput" accept=".json" onchange="handleFileSelect(event)">
+
+        <!-- NAVIGASI -->
+        <nav class="nav-menu" id="navMenu">
+            <div class="nav-item active" data-filter="all" onclick="setFilter('all', this)">📊 Semua Data</div>
+            <div class="nav-item" data-filter="FOOD" onclick="setFilter('FOOD', this)">🍔 Food</div>
+            <div class="nav-item" data-filter="NON FOOD" onclick="setFilter('NON FOOD', this)">🧹 Non Food</div>
+            <div class="nav-item" data-filter="FRESH" onclick="setFilter('FRESH', this)">❄️ Fresh</div>
+            <div class="nav-item" data-filter="critical" onclick="setFilter('critical', this)">🚨 Perlu Restock</div>
+            <div class="nav-item" data-filter="overstock" onclick="setFilter('overstock', this)">⚠️ Overstock</div>
+        </nav>
+
+        <div class="sidebar-footer">
+            🛒 v1.0 • JSON Upload Ready<br>
+            <span id="dataStatus">Belum ada data</span>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+        <!-- EMPTY STATE (Default) -->
+        <div id="emptyState" class="empty-state">
+            <div class="icon">📤</div>
+            <h2>Upload File JSON Kamu</h2>
+            <p>Klik area upload di sidebar kiri, atau drag & drop file JSON hasil export dari sistem ERP/Inventory kamu.</p>
+            <p style="font-size:0.8rem; margin-top:1rem; color: var(--text-secondary);">
+                Format yang didukung: Array of objects dengan field <code>plu</code>, <code>on_hand</code>, <code>avg_cost</code>, <code>nama_div</code>, dll.
+            </p>
         </div>
 
-        <div class="card">
-            <h3>Barang Kosong</h3>
-            <p id="emptyStock">0</p>
+        <!-- DASHBOARD CONTENT (Hidden by default) -->
+        <div id="dashboardContent" style="display: none;">
+            <div class="header">
+                <div>
+                    <h1>📊 Dashboard Inventori</h1>
+                    <p style="font-size:0.8rem; color: var(--text-secondary);" id="dataTimestamp">Data siap</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" onclick="resetFilters()">🔄 Reset Filter</button>
+                    <button class="btn btn-primary" onclick="exportCSV()">📥 Export CSV</button>
+                    <button class="btn btn-danger" onclick="clearData()">🗑 Hapus Data</button>
+                </div>
+            </div>
+
+            <!-- KPI CARDS -->
+            <div class="kpi-grid" id="kpiGrid">
+                <div class="kpi-card">
+                    <div class="kpi-label">📋 Total SKU</div>
+                    <div class="kpi-value text-accent" id="totalSku">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">📦 Total Stok (PCS)</div>
+                    <div class="kpi-value text-purple" id="totalStok">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">💰 Estimasi Nilai Inventori</div>
+                    <div class="kpi-value text-success" id="totalNilai">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">🚨 Di Bawah Min Stok</div>
+                    <div class="kpi-value text-danger" id="skuCritical">0</div>
+                    <div class="kpi-sub" id="skuOos"></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">⚠️ Overstock ( > Max Stok)</div>
+                    <div class="kpi-value text-warning" id="skuOver">0</div>
+                </div>
+            </div>
+
+            <!-- FILTER -->
+            <div class="filter-bar">
+                <select id="filterDivisi" onchange="applyFilters()">
+                    <option value="">🏢 Semua Divisi</option>
+                    <option value="FOOD">🍔 Food</option>
+                    <option value="NON FOOD">🧹 Non Food</option>
+                    <option value="FRESH">❄️ Fresh</option>
+                </select>
+                <select id="filterStatus" onchange="applyFilters()">
+                    <option value="">📊 Semua Status</option>
+                    <option value="oos">🚨 Out of Stock</option>
+                    <option value="below">🟡 Di Bawah Min Stok</option>
+                    <option value="over">🔴 Overstock</option>
+                    <option value="normal">🟢 Normal</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="🔍 Cari nama produk, barcode, atau PLU..."
+                oninput="applyFilters()">
+            </div>
+
+            <!-- CHARTS -->
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <h3>📊 Top 10 Nilai Inventori Tertinggi</h3>
+                    <canvas id="chartTop10"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>🍩 Komposisi Stok per Divisi</h3>
+                    <canvas id="chartDivisi"></canvas>
+                </div>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-container">
+                <div class="table-header">
+                    <span>📋 <strong>Detail Produk</strong> • <span id="tableCount">0</span> item</span>
+                </div>
+                <div class="table-scroll">
+                    <table id="productTable">
+                        <thead>
+                            <tr>
+                                <th>PLU</th>
+                                <th>Nama Produk</th>
+                                <th>Divisi</th>
+                                <th>On Hand</th>
+                                <th>Min Stok</th>
+                                <th>Max Stok</th>
+                                <th>Status</th>
+                                <th>Avg Cost (Rp)</th>
+                                <th>Nilai Total (Rp)</th>
+                                <th>Last Receipt</th>
+                                <th>Supplier</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-
-        <div class="card">
-            <h3>Food</h3>
-            <p id="foodCount">0</p>
-        </div>
-
-        <div class="card">
-            <h3>Non Food</h3>
-            <p id="nonFoodCount">0</p>
-        </div>
-
-    </section>
-
-    <section class="search-box">
-
-        <input type="text"
-               id="search"
-               placeholder="Cari PLU, Barcode, Nama Barang...">
-
-    </section>
-
-    <section class="chart-container">
-        <canvas id="divisiChart"></canvas>
-    </section>
-
-    <section class="table-container">
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>PLU</th>
-                    <th>Nama</th>
-                    <th>Stok</th>
-                    <th>Supplier</th>
-                </tr>
-            </thead>
-
-            <tbody id="tableBody"></tbody>
-
-        </table>
-
-    </section>
+    </main>
 
 <script src="js/script.js"></script>
-
+    
 </body>
 </html>
