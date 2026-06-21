@@ -32,11 +32,46 @@
         }
 
         function processFile(file) {
-            if (!file.name.toLowerCase().endsWith('.json')) {
-                alert('❌ Mohon upload file dengan ekstensi .json ya, Mas Bro!');
-                return;
-            }
+    // ... validasi JSON seperti biasa ...
+    
+    // Simpan ke localStorage (MENIMPA, bukan nambah)
+    localStorage.setItem('inventoriData', JSON.stringify(dataArray));
+    localStorage.setItem('inventoriTimestamp', new Date().toISOString());
+    localStorage.setItem('inventoriFileName', file.name);
+    
+    // Lanjut render dashboard
+    allData = dataArray;
+    // ... sisanya sama ...
+}
 
+// Saat halaman pertama kali dibuka, cek localStorage
+function loadFromLocalStorage() {
+    const saved = localStorage.getItem('inventoriData');
+    if (saved) {
+        allData = JSON.parse(saved);
+        const fileName = localStorage.getItem('inventoriFileName');
+        const timestamp = localStorage.getItem('inventoriTimestamp');
+        
+        // Tampilkan info
+        document.getElementById('fileInfo').textContent = 
+            `💾 ${fileName} (${allData.length} item) • Tersimpan di browser`;
+        document.getElementById('fileInfo').classList.add('show');
+        document.getElementById('dataStatus').textContent = 
+            `${allData.length} item • Lokal`;
+        
+        // Render dashboard
+        document.getElementById('emptyState').style.display = 'none';
+        document.getElementById('dashboardContent').style.display = 'block';
+        document.getElementById('dataTimestamp').textContent = 
+            `🕐 Data lokal: ${fileName} • ${new Date(timestamp).toLocaleString('id-ID')}`;
+        
+        populateFilterOptions();
+        applyFilters();
+    }
+}
+
+// Panggil saat halaman load
+window.addEventListener('DOMContentLoaded', loadFromLocalStorage);
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
