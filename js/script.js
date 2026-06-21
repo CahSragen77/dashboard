@@ -6,6 +6,16 @@ fetch('data/master.json')
 
     masterData = data;
 
+    data.forEach(item => {
+
+    let stok = parseFloat(item.on_hand);
+
+    if (isNaN(stok)) {
+        console.log("Item bermasalah:", item);
+    }
+
+});
+
     loadSummary(data);
     loadTable(data);
     loadChart(data);
