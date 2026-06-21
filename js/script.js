@@ -17,8 +17,15 @@ function loadSummary(data){
     document.getElementById('totalSku').innerText =
         data.length;
 
-    let totalStock = data.reduce((a,b)=>
-        a + Number(b.on_hand || 0),0);
+    let totalStock = data.reduce((total, item) => {
+
+    let stok = parseFloat(item.on_hand);
+
+    if (isNaN(stok)) stok = 0;
+
+    return total + stok;
+
+     }, 0);
 
     document.getElementById('totalStock').innerText =
         totalStock;
