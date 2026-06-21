@@ -19,38 +19,38 @@ function loadSummary(data){
 
     let totalStock = data.reduce((total, item) => {
 
-    let stok = parseFloat(item.on_hand);
+        let stok = parseFloat(item.on_hand);
 
-    if (isNaN(stok)) stok = 0;
+        if (isNaN(stok)) stok = 0;
 
-    return total + stok;
+        return total + stok;
 
-     
+    }, 0);
+
     document.getElementById('totalStock').innerText =
         totalStock;
 
     let kosong =
         data.filter(item =>
-        Number(item.on_hand)==0).length;
+        Number(item.on_hand) == 0).length;
 
     document.getElementById('emptyStock').innerText =
         kosong;
 
     let food =
         data.filter(item =>
-        item.nama_div=="FOOD").length;
+        item.nama_div == "FOOD").length;
 
     document.getElementById('foodCount').innerText =
         food;
 
     let nonfood =
         data.filter(item =>
-        item.nama_div=="NON FOOD").length;
+        item.nama_div == "NON FOOD").length;
 
     document.getElementById('nonFoodCount').innerText =
         nonfood;
 }
-
 function loadTable(data){
 
     let tbody =
