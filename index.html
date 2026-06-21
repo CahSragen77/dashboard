@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Toko</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>📦 Dashboard Toko</h1>
+    </header>
+
+    <section class="cards">
+
+        <div class="card">
+            <h3>Total SKU</h3>
+            <p id="totalSku">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Stok</h3>
+            <p id="totalStock">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Barang Kosong</h3>
+            <p id="emptyStock">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Food</h3>
+            <p id="foodCount">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Non Food</h3>
+            <p id="nonFoodCount">0</p>
+        </div>
+
+    </section>
+
+    <section class="search-box">
+
+        <input type="text"
+               id="search"
+               placeholder="Cari PLU, Barcode, Nama Barang...">
+
+    </section>
+
+    <section class="chart-container">
+        <canvas id="divisiChart"></canvas>
+    </section>
+
+    <section class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>PLU</th>
+                    <th>Nama</th>
+                    <th>Stok</th>
+                    <th>Supplier</th>
+                </tr>
+            </thead>
+
+            <tbody id="tableBody"></tbody>
+
+        </table>
+
+    </section>
+
+<script src="script.js"></script>
+
+</body>
+</html>
