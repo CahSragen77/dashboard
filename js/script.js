@@ -15,7 +15,6 @@ fetch('data/master.json')
     }
 
 });
-
     loadSummary(data);
     loadTable(data);
     loadChart(data);
