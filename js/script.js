@@ -25,8 +25,7 @@ function loadSummary(data){
 
     return total + stok;
 
-     }, 0);
-
+     
     document.getElementById('totalStock').innerText =
         totalStock;
 
