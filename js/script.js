@@ -17,40 +17,34 @@ function loadSummary(data){
     document.getElementById('totalSku').innerText =
         data.length;
 
-    let totalStock = data.reduce((total, item) => {
-
-        let stok = parseFloat(item.on_hand);
-
-        if (isNaN(stok)) stok = 0;
-
-        return total + stok;
-
-    }, 0);
+    let totalStock = data.reduce((a,b)=>
+        a + Number(b.on_hand || 0),0);
 
     document.getElementById('totalStock').innerText =
         totalStock;
 
     let kosong =
         data.filter(item =>
-        Number(item.on_hand) == 0).length;
+        Number(item.on_hand)==0).length;
 
     document.getElementById('emptyStock').innerText =
         kosong;
 
     let food =
         data.filter(item =>
-        item.nama_div == "FOOD").length;
+        item.nama_div=="FOOD").length;
 
     document.getElementById('foodCount').innerText =
         food;
 
     let nonfood =
         data.filter(item =>
-        item.nama_div == "NON FOOD").length;
+        item.nama_div=="NON FOOD").length;
 
     document.getElementById('nonFoodCount').innerText =
         nonfood;
 }
+
 function loadTable(data){
 
     let tbody =
@@ -93,21 +87,19 @@ function loadChart(data){
     let nonfood =
         data.filter(i=>i.nama_div=="NON FOOD").length;
 
-   new Chart(
-    document.getElementById('divisiChart'),
-    {
-        type:'pie',
+    new Chart(
+        document.getElementById('divisiChart'),
 
-        data:{
-            labels:['Food','Non Food'],
-            datasets:[{
-                data:[food, nonfood]
-            }]
-        },
+        {
+            type:'pie',
 
-        options:{
-            responsive:true,
-            maintainAspectRatio:true
+            data:{
+                labels:['Food','Non Food'],
+
+                datasets:[{
+                    data:[food, nonfood]
+                }]
+            }
         }
-    }
-);
+    );
+}
