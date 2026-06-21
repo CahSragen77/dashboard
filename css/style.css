@@ -46,19 +46,9 @@ header{
 
 .chart-container{
     background:white;
-    padding:20px;
+    margin:15px;
+    padding:15px;
     border-radius:10px;
-    width:90%;
-    max-width:600px;
-    margin:20px auto;
-}
-
-.chart-container canvas{
-    max-height:400px;
-}
-
-.chart-container canvas{
-    max-height:400px;
 }
 
 .table-container{
